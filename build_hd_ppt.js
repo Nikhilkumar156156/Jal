@@ -16,7 +16,8 @@ const SLIDE_INFO = [
   { num: 9, name: "Field Insights", notes: "From Fieldwork to Insight. The 5 interconnected pillars of water conservation." },
   { num: 10, name: "The Problem", notes: "The problem: Unmanaged rainwater runoff leading to low aquifer recharge and water stress." },
   { num: 11, name: "The Solution", notes: "Turning water into an engineered system: Collection, Diversion, Filtration, Recharge, and Smart Monitoring." },
-  { num: 12, name: "Commitment", notes: "Protect Water. Restore Nature. Build the Future. JAL - UCET Hazaribag." },
+  { num: 12, name: "Closing Ceremony", notes: "Closing Ceremony & Felicitation. Public awareness street play (Nukkad Natak), project presentation pitch, and certificate distribution honoring the 21 student ambassadors." },
+  { num: 13, name: "Commitment", notes: "Protect Water. Restore Nature. Build the Future. JAL - UCET Hazaribag." },
 ];
 
 async function buildHdDeck() {

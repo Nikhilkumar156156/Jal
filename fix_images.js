@@ -9,7 +9,8 @@ function syncImages() {
     "week-01-canary",
     "week-02-biodiversity",
     "week-03-nursery",
-    "week-04-salfarni"
+    "week-04-salfarni",
+    "closing-ceremony"
   ];
 
   folders.forEach(folder => {

@@ -6,7 +6,7 @@ const path = require("path");
 const fs = require("fs");
 
 const EDGE_PATH = "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe";
-const PORT = 3456;
+const PORT = 3000;
 const SLIDES_DIR = path.join(__dirname, "slides_hd");
 
 const SLIDE_INFO = [
@@ -21,25 +21,33 @@ const SLIDE_INFO = [
   { num: 9, name: "Field Insights", wait: 4000, notes: "From Fieldwork to Insight. The 5 interconnected pillars of water conservation." },
   { num: 10, name: "The Problem", wait: 4600, notes: "The problem: Unmanaged rainwater runoff leading to low aquifer recharge and water stress." },
   { num: 11, name: "The Solution", wait: 4200, notes: "Turning water into an engineered system: Collection, Diversion, Filtration, Recharge, and Smart Monitoring." },
-  { num: 12, name: "Commitment", wait: 6600, notes: "Protect Water. Restore Nature. Build the Future. JAL - UCET Hazaribag." },
+  { num: 12, name: "Closing Ceremony", wait: 3500, notes: "Closing Ceremony & Felicitation. Public awareness street play (Nukkad Natak), project presentation pitch, and certificate distribution honoring the 21 student ambassadors." },
+  { num: 13, name: "Commitment", wait: 6600, notes: "Protect Water. Restore Nature. Build the Future. JAL - UCET Hazaribag." },
 ];
 
-function waitForServer(port, timeout = 30000) {
+function waitForServer(port, timeout = 35000) {
   const start = Date.now();
   return new Promise((resolve, reject) => {
     function check() {
-      const req = http.get(`http://localhost:${port}`, (res) => {
+      const req = http.get(`http://localhost:${port}/Jal`, (res) => {
         resolve();
       });
       req.on("error", () => {
         if (Date.now() - start > timeout) {
           reject(new Error("Timeout waiting for Next.js server to start"));
         } else {
-          setTimeout(check, 400);
+          setTimeout(check, 500);
         }
       });
     }
     check();
+  });
+}
+
+function isServerRunning(port) {
+  return new Promise((resolve) => {
+    const req = http.get(`http://localhost:${port}/Jal`, (res) => resolve(true));
+    req.on("error", () => resolve(false));
   });
 }
 
@@ -48,16 +56,22 @@ async function run() {
     fs.mkdirSync(SLIDES_DIR, { recursive: true });
   }
 
-  console.log(`Starting Next.js server on port ${PORT}...`);
-  const server = spawn("cmd.exe", ["/c", `npx next start -p ${PORT}`], {
-    cwd: __dirname,
-    stdio: "ignore",
-    detached: false
-  });
+  let server = null;
+  const running = await isServerRunning(PORT);
+  if (!running) {
+    console.log(`Starting Next.js dev server on port ${PORT}...`);
+    server = spawn("cmd.exe", ["/c", `npx.cmd next dev -p ${PORT}`], {
+      cwd: __dirname,
+      stdio: "ignore",
+      detached: false
+    });
+    await waitForServer(PORT);
+  } else {
+    console.log(`Server already active on port ${PORT}.`);
+  }
 
   try {
-    await waitForServer(PORT);
-    console.log("Server is ready! Launching headless Edge browser...");
+    console.log("Launching headless Edge browser...");
 
     const browser = await puppeteer.launch({
       executablePath: EDGE_PATH,
@@ -76,18 +90,18 @@ async function run() {
     });
 
     const page = await browser.newPage();
-    await page.goto(`http://localhost:${PORT}`, { waitUntil: "networkidle0" });
+    await page.goto(`http://localhost:${PORT}/Jal`, { waitUntil: "networkidle0" });
 
     // Wait for the slide helper function to become available
-    await page.waitForFunction(() => typeof window.__goToSlide === "function", { timeout: 10000 });
+    await page.waitForFunction(() => typeof window.__goToSlide === "function", { timeout: 15000 });
 
-    console.log("Capturing 12 high-resolution slides...");
+    console.log(`Capturing ${SLIDE_INFO.length} high-resolution slides...`);
 
     const capturedImages = [];
 
     for (let i = 0; i < SLIDE_INFO.length; i++) {
       const info = SLIDE_INFO[i];
-      console.log(`[${i + 1}/12] Navigating to Slide ${info.num}: ${info.name}...`);
+      console.log(`[${i + 1}/${SLIDE_INFO.length}] Navigating to Slide ${info.num}: ${info.name}...`);
 
       // Switch to slide
       await page.evaluate((idx) => {
@@ -154,9 +168,9 @@ async function run() {
     console.log(`SUCCESS! Pixel-perfect presentation created at:\n${outputPptxPath}`);
 
   } finally {
-    // Kill server process
-    server.kill();
-    spawn("cmd.exe", ["/c", `taskkill /F /IM node.exe /FI "WINDOWTITLE eq *${PORT}*"`], { stdio: "ignore" });
+    if (server) {
+      server.kill();
+    }
   }
 }
 

@@ -1,25 +1,6 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
-import { Space_Grotesk, Inter, Noto_Sans_Devanagari } from 'next/font/google'
 import './globals.css'
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ['latin'],
-  variable: '--font-display',
-  display: 'swap',
-})
-
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-body',
-  display: 'swap',
-})
-
-const notoDeva = Noto_Sans_Devanagari({
-  subsets: ['devanagari'],
-  variable: '--font-deva',
-  display: 'swap',
-})
 
 export const metadata: Metadata = {
   title: 'JAL — Water Conservation & Water Bodies Revival | UCET Hazaribag',
@@ -42,7 +23,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${spaceGrotesk.variable} ${inter.variable} ${notoDeva.variable} dark`}>
+    <html lang="en" className="dark font-sans">
       <body className="antialiased">
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}

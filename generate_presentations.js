@@ -68,7 +68,7 @@ async function buildEditablePresentation() {
   }
 
   function addSlideHeader(slide, title, highlightText, slideNum, slideLabel) {
-    slide.addText(`${String(slideNum).padStart(2, "0")} / 12  ·  ${slideLabel}`, {
+    slide.addText(`${String(slideNum).padStart(2, "0")} / 13  ·  ${slideLabel}`, {
       x: 8.0,
       y: 0.35,
       w: 5.0,
@@ -981,7 +981,106 @@ async function buildEditablePresentation() {
     });
   }
 
-  // Slide 12: Commitment & Closing
+  // Slide 12: Closing Ceremony & Felicitation
+  {
+    const slide = addSlide("Slide 12: Closing Ceremony & Felicitation. Awareness street play (Nukkad Natak), project presentation pitch, and certificate distribution honoring the 21 student ambassadors.");
+    addDarkBackground(slide);
+    addSlideHeader(slide, "CLOSING CEREMONY &", "FELICITATION", 12, "Closing Ceremony");
+
+    const CEREMONY_CARDS = [
+      {
+        step: "01 · PUBLIC ADVOCACY",
+        title: "Awareness Street Play",
+        desc: "Theatrical Nukkad Natak on river reverence, Devi Ganga, and confronting daily urban water wastage habits.",
+        img: path.join(__dirname, "public", "images", "closing-ceremony", "skit-play.jpg"),
+        tags: ["Devi Ganga Skit", "Public Advocacy"]
+      },
+      {
+        step: "02 · TECHNICAL PITCH",
+        title: "Project Presentation",
+        desc: "Synthesizing 4 weeks of field data & engineered rainwater replenishment models at the podium.",
+        img: path.join(__dirname, "public", "images", "closing-ceremony", "presentation.jpg"),
+        tags: ["Solution Pitch", "Data Synthesis"]
+      },
+      {
+        step: "03 · RECOGNITION",
+        title: "Certificate & Felicitation",
+        desc: "Formal certificate distribution honoring all 21 student leaders with faculty mentors and organizers.",
+        img: path.join(__dirname, "public", "images", "closing-ceremony", "certificates.jpg"),
+        tags: ["21 Ambassadors", "Official Honor"]
+      }
+    ];
+
+    const cardW = 3.75;
+    const cardGap = 0.24;
+    const sx = 0.8;
+
+    CEREMONY_CARDS.forEach((c, i) => {
+      const x = sx + i * (cardW + cardGap);
+      const y = 1.35;
+
+      slide.addShape(pptx.ShapeType.roundRect, {
+        x, y, w: cardW, h: 4.8,
+        rectRadius: 0.15,
+        fill: { color: COLORS.cardBgLight, transparency: 15 },
+        line: { color: COLORS.turquoise, width: 1.2 }
+      });
+
+      slide.addText(c.step, {
+        x: x + 0.2, y: y + 0.15, w: cardW - 0.4, h: 0.25,
+        fontSize: 8.5, bold: true, color: COLORS.turquoise, charSpacing: 1.5
+      });
+
+      if (fs.existsSync(c.img)) {
+        slide.addImage({
+          path: c.img,
+          x: x + 0.2,
+          y: y + 0.45,
+          w: cardW - 0.4,
+          h: 2.2,
+          sizing: { type: "cover", w: cardW - 0.4, h: 2.2 }
+        });
+      }
+
+      slide.addText(c.title, {
+        x: x + 0.2, y: y + 2.75, w: cardW - 0.4, h: 0.35,
+        fontFace: "Segoe UI", fontSize: 13, bold: true, color: COLORS.white
+      });
+
+      slide.addText(c.desc, {
+        x: x + 0.2, y: y + 3.15, w: cardW - 0.4, h: 0.85,
+        fontSize: 9.5, color: COLORS.textSub
+      });
+
+      slide.addShape(pptx.ShapeType.line, {
+        x: x + 0.2, y: y + 4.1, w: cardW - 0.4, h: 0,
+        line: { color: COLORS.borderAqua, width: 0.8 }
+      });
+
+      slide.addText("✓ " + c.tags.join("   ✓ "), {
+        x: x + 0.2, y: y + 4.2, w: cardW - 0.4, h: 0.35,
+        fontSize: 8.5, bold: true, color: COLORS.turquoise
+      });
+    });
+
+    slide.addShape(pptx.ShapeType.roundRect, {
+      x: 2.0, y: 6.3, w: 9.33, h: 0.65,
+      rectRadius: 0.15,
+      fill: { color: COLORS.deep, transparency: 20 },
+      line: { color: COLORS.turquoise, width: 1 }
+    });
+
+    slide.addText([
+      { text: "Awareness through Action. ", options: { fontSize: 12, bold: true, color: COLORS.white } },
+      { text: "Confidence through Presentation. ", options: { fontSize: 12, bold: true, color: COLORS.turquoise } },
+      { text: "Honored through Dedication.", options: { fontSize: 12, bold: true, color: COLORS.cyanBright } }
+    ], {
+      x: 2.0, y: 6.3, w: 9.33, h: 0.65,
+      align: "center", valign: "middle"
+    });
+  }
+
+  // Slide 13: Commitment & Closing
   {
     const slide = addSlide("Closing Slide: Call to action, acknowledging the UCET Hazaribag team and mission commitment.");
     if (fs.existsSync(FINAL_IMG)) {

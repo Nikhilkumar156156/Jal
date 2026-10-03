@@ -57,4 +57,4 @@ export const WEEKS = [
   },
 ] as const
 
-export const TOTAL_SLIDES = 12
+export const TOTAL_SLIDES = 13

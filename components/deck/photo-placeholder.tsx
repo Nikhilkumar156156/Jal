@@ -11,25 +11,22 @@ const BASE_PATH = "/Jal"
 function getCandidateUrls(baseSrc?: string): string[] {
   if (!baseSrc) return []
 
-  const withoutExt = baseSrc.replace(
+  const cleanSrc = baseSrc.startsWith("/Jal/") ? baseSrc.replace(/^\/Jal/, "") : baseSrc
+  const withoutExt = cleanSrc.replace(
     /\.(jpe?g|png|webp|avif)(\.jpe?g|\.png)?$/i,
     "",
   )
 
-  return Array.from(
-    new Set([
-      baseSrc,
-      `${withoutExt}.jpg`,
-      `${withoutExt}.jpeg`,
-      `${withoutExt}.jpg.jpeg`,
-      `${withoutExt}.jpeg.jpg`,
-      `${withoutExt}.png`,
-      `${withoutExt}.webp`,
-      `${withoutExt}.JPG`,
-      `${withoutExt}.JPEG`,
-      `${withoutExt}.PNG`,
-    ]),
-  )
+  const extensions = ["jpg", "jpeg", "jpg.jpeg", "jpeg.jpg", "png", "webp", "JPG", "JPEG", "PNG"]
+  const urls: string[] = []
+
+  // Add primary configured path first, then bare path
+  extensions.forEach((ext) => {
+    urls.push(`${BASE_PATH}${withoutExt}.${ext}`)
+    urls.push(`${withoutExt}.${ext}`)
+  })
+
+  return Array.from(new Set(urls))
 }
 
 /* A stylish, on-brand field-photo placeholder */
@@ -39,29 +36,20 @@ export function PhotoPlaceholder({
   src,
   className = "",
   rotate = 0,
+  showOverlay = true,
 }: {
   label: string
   caption?: string
   src?: string
   className?: string
   rotate?: number
+  showOverlay?: boolean
 }) {
   const candidateUrls = useMemo(() => getCandidateUrls(src), [src])
   const [candidateIdx, setCandidateIdx] = useState(0)
   const [hasError, setHasError] = useState(false)
 
-  /*
-   * Add /Jal only when running on GitHub Pages.
-   *
-   * Example:
-   * /images/slide-04/canary.jpg
-   *
-   * becomes:
-   * /Jal/images/slide-04/canary.jpg
-   */
   const currentUrl = candidateUrls[candidateIdx]
-    ? `${BASE_PATH}${candidateUrls[candidateIdx]}`
-    : undefined
 
   const showImage = Boolean(currentUrl && !hasError)
 
@@ -89,17 +77,19 @@ export function PhotoPlaceholder({
 
           <div className="absolute inset-0 bg-gradient-to-t from-abyss/85 via-abyss/20 to-transparent pointer-events-none" />
 
-          <div className="absolute bottom-3 left-3 right-3 z-10">
-            <p className="font-display text-[11px] font-bold tracking-[0.2em] text-white uppercase drop-shadow-md">
-              {label}
-            </p>
-
-            {caption ? (
-              <p className="text-[10px] leading-tight text-white/70 drop-shadow-sm">
-                {caption}
+          {showOverlay && (
+            <div className="absolute bottom-3 left-3 right-3 z-10">
+              <p className="font-display text-[11px] font-bold tracking-[0.2em] text-white uppercase drop-shadow-md">
+                {label}
               </p>
-            ) : null}
-          </div>
+
+              {caption ? (
+                <p className="text-[10px] leading-tight text-white/70 drop-shadow-sm">
+                  {caption}
+                </p>
+              ) : null}
+            </div>
+          )}
         </div>
       ) : (
         <>

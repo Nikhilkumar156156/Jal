@@ -16,6 +16,7 @@ import { SlideSalfarni } from "./slides/slide-salfarni"
 import { Slide05 } from "./slides/slide-05"
 import { Slide06 } from "./slides/slide-06"
 import { Slide07 } from "./slides/slide-07"
+import { SlideClosing } from "./slides/slide-closing"
 import { Slide08 } from "./slides/slide-08"
 
 const SLIDES = [
@@ -30,6 +31,7 @@ const SLIDES = [
   Slide05,
   Slide06,
   Slide07,
+  SlideClosing,
   Slide08,
 ]
 
@@ -45,6 +47,7 @@ const SLIDE_LABELS = [
   "Insights",
   "The Problem",
   "The Solution",
+  "Closing Ceremony",
   "Commitment",
 ]
 
